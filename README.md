@@ -13,18 +13,18 @@
         i18n/labels   用于页面标签类，在下面可以创建子目录，按照模块  
         i18n/messages 用于文本内容 在下面可以创建子目录，按照模块  
 #####创建属性文件
-在目录放入相应的属性文件：order.properties，order_zh_CN.properties，order_en_US.properties   不带区域和语言的属性文件为默认，需要和en_US一样。zn_CN文件需要转码。如：order.order.name=\u8BA2\u5355\u540D\u79F0  
-建议code的命名规则为模块名+功能名+含义  
-在controller中注入：  
+        在目录放入相应的属性文件：order.properties，order_zh_CN.properties，order_en_US.properties   不带区域和语言的属性文件为默认，需要和en_US一样。zn_CN文件需要转码。如：order.order.name=\u8BA2\u5355\u540D\u79F0  
+        建议code的命名规则为模块名+功能名+含义  
+#####在controller中注入：  
      	@Autowired  
 	ResWebBundle rb;  
-然后在各个方法里面可以调用：  
+	然后在各个方法里面可以调用：  
      如：  
         rb.getMessage(code);  
         rb.getMessage(code,locale);  
      如果用户主动切换了语言选择，需要调用下面的方法设置Cookie:  
         rb.setDefaultLocale(request, response, Locale.SIMPLIFIED_CHINESE);  
-在JSP页面：  
+#####在JSP页面：  
      <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>  
   
      ${pageContext.response.locale} 可以获取使用的区域，用于图片的转换   
