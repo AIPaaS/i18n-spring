@@ -39,3 +39,24 @@
 	background= white 
 	在用户访问时会使用默认的，用户可以主动更换 xxxx?theme=cn
 #### Spring App如何使用  	
+#####引入依赖：  
+	<import resource="classpath:i18n/context/spring-locale.xml"/>
+#####属性文件：  
+	在类路径下创建：
+		i18n/labels   用于页面标签类，在下面可以创建子目录，按照模块  
+       	 	i18n/messages 用于文本内容 在下面可以创建子目录，按照模块  
+#####注入：	
+	@Autowired
+	ResBundle rb;
+#####使用：	
+	rb.getMessage("ipaas.apply.sucess") //需要引入dubbo-ext包，它为调用方和提供方做了相应的处理，不需要关心Locale
+	
+	消费方和以前一样，但也要me配置上面springMVC的i18n：
+	 	ApplyInfo info = new ApplyInfo(); //继承了dubbo-ext的baseinfo类
+		info.setApplyType("test");
+		info.setUserId("11111111");
+		info.setServiceId("SES001");
+		WebApplicationContext webApp = RequestContextUtils
+				.getWebApplicationContext(request);
+		ISequenceRPC seqRPC = (ISequenceRPC) webApp.getBean("seqRPC");
+		ApplyResult result = seqRPC.getSeq(info);
