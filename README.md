@@ -22,6 +22,7 @@
      如：  
         rb.getMessage(code);  
         rb.getMessage(code,locale);  
+#####用户切换语言	
      如果用户主动切换了语言选择，需要调用下面的方法设置Cookie:  
         rb.setDefaultLocale(request, response, Locale.SIMPLIFIED_CHINESE);  
 #####在JSP页面：  
@@ -31,3 +32,10 @@
     
      <spring:message code="order.order.name"/>  
      <input type="text" value="<spring:message code="user.login.name"/>">  
+#####风格更换（可以不使用）
+	用于替换不同语言下样式和背景风格
+	在类路径下theme-default.properties（必须有）,theme-en.properties,theme-cn.properties等属性文件
+	styleSheet=../css/style-en.css
+	background= white 
+	在用户访问时会使用默认的，用户可以主动更换 xxxx?theme=cn
+#### Spring App如何使用  	
