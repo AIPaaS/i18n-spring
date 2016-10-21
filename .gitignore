@@ -1,0 +1,12 @@
+bin/**/*
+build/**/*
+target/**/*
+reports/**/*
+.classpath
+.project
+/.gradle
+/.settings
+/.classpath
+/bin/
+/build/
+/reports/

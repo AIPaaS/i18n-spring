@@ -1,0 +1,217 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+apply plugin: 'pmd'
+apply plugin: 'findbugs'
+apply plugin: 'checkstyle'
+
+compileJava.dependsOn clean
+
+sourceCompatibility = 1.7
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+    exclude group: 'log4j', module: 'log4j'
+    exclude group: "org.slf4j", module: "slf4j-log4j12"
+}
+    
+checkstyleMain {
+    ignoreFailures = false
+    reports {
+        include ( '**/*.java')
+        xml {
+           destination = new File(rootDir, "reports/checkstyle/${project.name}.xml" )
+        }
+    }
+    configFile = new File(rootDir, 'checkstyle.xml')
+}
+
+checkstyleTest {
+	ignoreFailures = false
+	reports {
+		include ( '**/*.java')
+		xml {
+			destination = new File(rootDir, "reports/checkstyle/${project.name}_test.xml" )
+		}
+	}
+	configFile = new File(rootDir, 'checkstyle.xml')
+}
+
+findbugsMain {
+	ignoreFailures = true
+	reports {
+        include ( '**/*.java')
+        xml {
+           destination = new File(rootDir, "reports/findbugs/${project.name}.xml" )
+        }
+    }
+	effort = "max"
+	reportLevel = "high"
+	omitVisitors = ["FindNonShortCircuit"]
+}
+
+findbugsTest {
+	ignoreFailures = true
+	reports {
+        include ( '**/*.java')
+        xml {
+           destination = new File(rootDir, "reports/findbugs/${project.name}_test.xml" )
+        }
+    }
+	effort = "max"
+	reportLevel = "high"
+	omitVisitors = ["FindNonShortCircuit"]
+}
+
+pmdMain {
+	ignoreFailures = true
+	reports {
+        include ( '**/*.java')
+        xml {
+           destination = new File(rootDir, "reports/pmd/${project.name}.xml" )
+        }
+    }
+}
+
+pmdTest {
+	ignoreFailures = true
+	reports {
+        include ( '**/*.java')
+        xml {
+           destination = new File(rootDir, "reports/pmd/${project.name}_test.xml" )
+        }
+    }
+}
+
+[compileJava, compileTestJava,javadoc]*.options*.encoding = 'UTF-8'
+
+repositories {
+    maven{ url "http://10.1.228.199:18081/nexus/content/groups/public/"  }
+}
+
+sourceSets {
+    main {
+        java { srcDirs = ['src/main/java']}
+    }
+}
+
+ext {
+	moduleName = "ipaas-i18n-spring";
+	moduleVersion = version != "unspecified"?version:'0.3'
+	moduleMode = project.hasProperty('mode') ? project.getProperty('mode') : 'R'
+	if(moduleMode == 'S'){
+		moduleVersion = moduleVersion + "-SNAPSHOT";
+	}
+	publishUserName = "devadm"
+	publishUserPassword = "Devadm@1212"
+	publishSnapShotsURL="http://10.1.228.199:18081/nexus/content/repositories/snapshots/"
+	publishReleaseURL="http://10.1.228.199:18081/nexus/content/repositories/releases/"
+	builtBy="gradle 2.1" 
+} 
+
+group = 'com.ai'
+
+dependencies{
+	compile "org.apache.logging.log4j:log4j-core:2.2"
+	compile "org.apache.logging.log4j:log4j-slf4j-impl:2.2"
+	compile "org.apache.logging.log4j:log4j-1.2-api:2.2"
+
+	compile "org.springframework:spring-web:4.1.7.RELEASE"
+    compile "org.springframework:spring-webmvc:4.1.7.RELEASE"
+    compile 'org.springframework:spring-context-support:4.1.7.RELEASE'
+    compile "javax.servlet:javax.servlet-api:3.1.0"
+    	
+	
+	
+    
+    testCompile(
+		"org.springframework:spring-test:4.1.6.RELEASE",
+		"junit:junit:4.11"
+	)
+}
+
+
+jar {
+
+	println "Hello $moduleVersion" 
+    baseName moduleName
+    version moduleVersion
+	manifest {
+        attributes 'packageName': moduleName, 'Built-By': builtBy,'create-date': new Date().format('yyyy-MM-dd HH:mm:ss')
+    }
+}
+task copyFiles << { 
+        copy{ 
+                from configurations.compile 
+                into "$buildDir/copy" 
+        } 
+} 
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	baseName moduleName
+    version moduleVersion
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+publish.dependsOn build 
+
+
+publishing {
+    publications {
+        mavenJar(MavenPublication) {
+        	groupId group
+        	artifactId "${moduleName}"
+            artifact sourcesJar
+            version moduleVersion
+            pom.withXml {
+	            asNode().children().last() + {
+	                delegate.dependencies {
+                    	delegate.dependency {
+                                delegate.groupId("org.springframework")
+                                delegate.artifactId("spring-context-support")
+                                delegate.version("4.1.7.RELEASE")
+                        } 
+                   }
+                }
+             }
+       	} 
+       	publishing.publications.create("${moduleName}", MavenPublication) {
+            groupId group
+            artifactId moduleName
+            version moduleVersion
+            artifact  jar
+            pom.withXml {
+	            asNode().children().last() + {
+	                delegate.dependencies {
+                    	delegate.dependency {
+                                delegate.groupId("org.springframework")
+                                delegate.artifactId("spring-context-support")
+                                delegate.version("4.1.7.RELEASE")
+                        } 
+                    }
+	            }
+	        }
+        }
+    }
+    
+    repositories {
+        maven {
+            credentials {
+                username = publishUserName
+                password = publishUserPassword
+            }
+            if(moduleVersion.endsWith('-SNAPSHOT')) {
+                url publishSnapShotsURL
+            } else {
+                url publishReleaseURL
+            }
+        }
+    }
+}
+
