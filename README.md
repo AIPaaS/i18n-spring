@@ -2,6 +2,7 @@
 本工程支持SpringMVC的国际化和Spring项目的国际化
 * 支持按目录加载国际化属性文件
 * 支持更换主题风格
+* 支持时间跨时区处理
 
 #### Spring MVC如何使用  
 #####引入依赖：  
@@ -60,3 +61,14 @@
 				.getWebApplicationContext(request);
 		ISequenceRPC seqRPC = (ISequenceRPC) webApp.getBean("seqRPC");
 		ApplyResult result = seqRPC.getSeq(info);
+***  
+#### JVM 参数设置  
+	在所有的工程里面再启动过程中，增加jvm启动参数：-Duser.timezone=GMT  
+	这样保证我们默认使用GMT时间。  
+##### 在java中直接new Date对象  
+	和以前一样，直接new即可  
+##### 在java中直接format 时间对象为字符串
+        此时要对SimpleDateFormat对象进行时区设置，
+	如：
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+		sdf.setTimeZone(LocaleContextHolder.getTimeZone());  
