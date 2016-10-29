@@ -62,13 +62,23 @@
 		ISequenceRPC seqRPC = (ISequenceRPC) webApp.getBean("seqRPC");
 		ApplyResult result = seqRPC.getSeq(info);
 ***  
+### 时间处理 
 #### JVM 参数设置  
 	在所有的工程里面再启动过程中，增加jvm启动参数：-Duser.timezone=GMT  
 	这样保证我们默认使用GMT时间。  
 ##### 在java中直接new Date对象  
 	和以前一样，直接new即可  
-##### 在java中直接format 时间对象为字符串
-        此时要对SimpleDateFormat对象进行时区设置，
-	如：
-		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
-		sdf.setTimeZone(LocaleContextHolder.getTimeZone());  
+##### 在java中直接format 时间对象为字符串  
+        此时要对SimpleDateFormat对象进行GMT时区设置，这样保证得到时间为GMT标准时间  
+	如：  
+		sdf.setTimeZone(TimeZone.getTimeZone(TimeZoneEnum.GMT.getZone()));  
+		sdf.parse(sd)  
+##### 在页面中展示用jstl展示时间  
+     
+		sdf.setTimeZone(LocaleContextHolder.getTimeZone());    
+		sdf.format(new Date());
+		
+##### 在java中直接parse 字符串为时间  
+	如果时间字符串为区域时间，则需要设置为区域。  
+	  	sdf.setTimeZone(LocaleContextHolder.getTimeZone());
+		
