@@ -26,6 +26,7 @@
 #####用户切换语言	
      如果用户主动切换了语言选择，需要调用下面的方法设置Cookie:  
         rb.setDefaultLocale(request, response, Locale.SIMPLIFIED_CHINESE);  
+	 rb.setDefaultLocale(request, response, Locale.US);  
 #####在JSP页面：  
      <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>  
   
@@ -65,14 +66,32 @@
 ### 时间处理 
 #### JVM 参数设置  
 	在所有的工程里面再启动过程中，增加jvm启动参数：-Duser.timezone=GMT  
-	这样保证我们默认使用GMT时间。  
+	这样保证我们默认使用GMT时间。 
+##### 首次探测用户所在时区
+			Date.prototype.stdTimezoneOffset = function() {
+			var jan = new Date(this.getFullYear(), 0, 1);
+			var jul = new Date(this.getFullYear(), 6, 1);
+			return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+			}
+
+			Date.prototype.dst = function() {
+				return this.getTimezoneOffset() < this.stdTimezoneOffset();
+			}
+			var today = new Date();
+			//发送到后端
+			$.post("index.jsp?offset="+today.stdTimezoneOffset());
+
 ##### 在java中直接new Date对象  
 	和以前一样，直接new即可  
 ##### 在java中直接format 时间对象为字符串  
         此时要对SimpleDateFormat对象进行GMT时区设置，这样保证得到时间为GMT标准时间  
 	如：  
-		sdf.setTimeZone(TimeZone.getTimeZone(TimeZoneEnum.GMT.getZone()));  
+		Dubbo端  
+		sdf.setTimeZone(LocaleContextHolder.getTimeZone());  
 		sdf.parse(sd)  
+		Web端：
+			sdf.setTimeZone(ZoneContextHolder.getZone());  
+			sdf.parse(sd)  
 ##### 在页面中展示用jstl展示时间  
 		在所有页面需要设置：
      		<fmt:setTimeZone value="${sessionScope.USER_TIME_ZONE}" scope="session"/>  
