@@ -15,9 +15,9 @@ import javax.servlet.http.HttpSession;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
- * @author DOUXF 用于探测用户的时区，全部拦截，在首页时尾部增加一段js代码，然后发送到固定的URL,
- *         需要下面的js来实现 Date.prototype.stdTimezoneOffset = function() { var jan =
- *         new Date(this.getFullYear(), 0, 1); var jul = new
+ * @author DOUXF 用于探测用户的时区，全部拦截，在首页时尾部增加一段js代码，然后发送到固定的URL, 需要下面的js来实现
+ *         Date.prototype.stdTimezoneOffset = function() { var jan = new
+ *         Date(this.getFullYear(), 0, 1); var jul = new
  *         Date(this.getFullYear(), 6, 1); return
  *         Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset()); }
  * 
@@ -37,6 +37,10 @@ public class TimeZoneFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
+		if (!(request instanceof HttpServletRequest)) {
+			chain.doFilter(request, response);
+			return;
+		}
 		String offset = request.getParameter("offset");
 		if (null != offset && !"".equals(offset)) {
 			int timeOffset = Integer.parseInt(offset);
@@ -52,9 +56,8 @@ public class TimeZoneFilter implements Filter {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			HttpSession session = httpRequest.getSession(false);
 			if (null != session && null != session.getAttribute(USER_TIME_ZONE)) {
-				LocaleContextHolder.setTimeZone(TimeZone
-						.getTimeZone("GMT+"+(String) session
-								.getAttribute(USER_TIME_ZONE)));
+				ZoneContextHolder.setZone((String) session
+						.getAttribute(USER_TIME_ZONE));
 			}
 		}
 		chain.doFilter(request, response);
