@@ -108,7 +108,14 @@
 	"timesToFmatter":function(times){
 		var format = function(time, format){ 
 			var t = new Date(time+timeZone*3600*1000); 
-### dubbo开启压缩  
+### dubbo调优  
+#### 开启压缩  
 	import org.jboss.resteasy.annotations.GZIP;  
 	在接口方法定义上增加注解  
-	@GZIP  
+	@GZIP 
+#### Web端直接调用服务，不使用zookeeper  	
+	在消费端配置文件：  
+		<dubbo:registry address="N/A" />
+		
+			<dubbo:reference interface="com.ai.paas.ipaas.rpc.api.seq.ISequenceRPC" id="seqRPC" url="rest://10.1.52.12:20880/services/com.ai.paas.ipaas.rpc.api.seq.ISequenceRPC"/>
+	还得考虑负载均衡，使用HaProxy。后面服务提供者可以提供健康检查功能		
