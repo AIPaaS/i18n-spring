@@ -108,3 +108,7 @@
 	"timesToFmatter":function(times){
 		var format = function(time, format){ 
 			var t = new Date(time+timeZone*3600*1000); 
+### dubbo开启压缩  
+	import org.jboss.resteasy.annotations.GZIP;  
+	在接口方法定义上增加注解  
+	@GZIP  
