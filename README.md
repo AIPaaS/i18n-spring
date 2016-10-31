@@ -74,11 +74,18 @@
 		sdf.setTimeZone(TimeZone.getTimeZone(TimeZoneEnum.GMT.getZone()));  
 		sdf.parse(sd)  
 ##### 在页面中展示用jstl展示时间  
-     
-		sdf.setTimeZone(LocaleContextHolder.getTimeZone());    
-		sdf.format(new Date());
-		
+		在所有页面需要设置：
+     		<fmt:setTimeZone value="${sessionScope.USER_TIME_ZONE}" scope="session"/>  
+		然后和以前一样：  
+		<fmt:formatDate pattern="yyyy-MM-dd HH:mm:ss" value="${d}"/>  
+		  
 ##### 在java中直接parse 字符串为时间  
 	如果时间字符串为区域时间，则需要设置为区域。  
 	  	sdf.setTimeZone(LocaleContextHolder.getTimeZone());
-		
+##### 在js中格式化数字时间为字符串  
+	var timeZone="${sessionScope.USER_TIME_ZONE}"
+	timeZone=timeZone.substring(3);//获取时区时间，带符号
+	$.views.helpers({
+	"timesToFmatter":function(times){
+		var format = function(time, format){ 
+			var t = new Date(time+timeZone*3600*1000); 
