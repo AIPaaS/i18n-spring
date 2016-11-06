@@ -119,3 +119,105 @@
 		
 			<dubbo:reference interface="com.ai.paas.ipaas.rpc.api.seq.ISequenceRPC" id="seqRPC" url="rest://10.1.52.12:20880/services/com.ai.paas.ipaas.rpc.api.seq.ISequenceRPC"/>
 	还得考虑负载均衡，使用HaProxy。后面服务提供者可以提供健康检查功能		
+
+
+
+### 字数统计  
+#### 算法
+	先将用户输入或者粘贴的文字进行特殊字符处理，如转义单、双引号，回车替换等。  
+	然后按照空格切分  
+	然后循环每个切分词，按照各种语言的UTF-8编码范围进行判断，如遇到中文字符就算一个，直接有英文也算一个字。  
+	<!DOCTYPE html>  
+	<html>  
+	<head>  
+	<meta charset="UTF-8">  
+	<title>Insert title here</title>  
+	<script type="text/javascript" src="js/jquery.min.js"></script>  
+	</head>  
+	<body>  
+	<textarea id="content" rows="10" cols="100"></textarea>  
+	<button type="button" onclick="test();">Click Me!</button>  
+	</body>  
+	</html>  
+	<script type="text/javascript">  
+	function test(){  
+		var txt=document.getElementById('content').value;  
+		alert(count(escape(txt)));  
+	}  
+
+	function escape (string) {  
+	  return ('' + string).replace(/["'\\\n\r\u2028\u2029]/g, function (character) {  
+	    // Escape all characters not included in SingleStringCharacters and  
+	    // DoubleStringCharacters on  
+	    // http://www.ecma-international.org/ecma-262/5.1/#sec-7.8.4  
+	    switch (character) {  
+	      case '"':  
+	      case "'":  
+	      case '\\':  
+		return '\\' + character  
+	      // Four possible LineTerminator characters need to be escaped:  
+	      case '\n':  
+		return ' '  
+	      case '\r':  
+		return ' '  
+	      case '\u2028':  
+		return '\\u2028'  
+	      case '\u2029':  
+		return '\\u2029'   
+	    }  
+	  })  
+	}  
+     
+	function count(input){  
+		//first judge is null  
+		if(!input || 0 === input.length) return 0;  
+		//start split  
+		var words=input.split(' ');  
+		var total=0;  
+		for(var i=0;i<words.length;i++){  
+			total=total+wordCount(words[i]);     
+    }  
+	return total;  
+}  
+
+function wordCount(word){  
+	if(!word || 0 === word.length) return 0;  
+	word = word.replace(/^\s+|\s+$/gm,'');  
+	if(!word || 0 === word.length) return 0;  
+	var char, i, len = word.length, count = 0;  
+	var before=false;  
+    for (i = 0; i < len; ++i){  
+		//此处算法为：1.如果是英文字母，则需要看一下字符，直到遇到一个其他语言字符，此时前面字数加1，如果到单词尾也加一  
+		//中、日、韩分别区间，三者标点符号为相应区间，都算一个字  
+		//英语、法语、俄语、葡萄牙语处理一样，所以这里就不判断了  
+		//汉语  
+		var char = word.charCodeAt(i);  
+		//中文，韩文两个，日文, 全角英文数字符号  
+        if ( (char >= 0x4e00 && char <= 0x9fa5) || (char >= 0x3130 && char <= 0x318f) || (char >= 0xac00 && char <= 0xd7a3)  
+			|| (char >= 0x0800 && char <= 0x4e00) || (char >= 0xff00 && char <= 0xffef) || (char >= 0x2e80 && char <= 0x2eff)  
+			|| (char >= 0x3000 && char <= 0x303f) || (char >= 0x31c0 && char <= 0x31ef)  || (char >= 0x2f00 && char <= 0x2fdf)  
+			|| (char >= 0x2ff0 && char <= 0x2fff) || (char >= 0x3100 && char <= 0x312f) || (char >= 0x31a0 && char <= 0x31bf)   
+			|| (char >= 0x3040 && char <= 0x309f) || (char >= 0x30a0 && char <= 0x30ff) || (char >= 0x31f0 && char <= 0x31ff)   
+			|| (char >= 0xac00 && char <= 0xd7af) || (char >= 0x1100 && char <= 0x11ff) || (char >= 0x3130 && char <= 0x318f)   
+			|| (char >= 0x1d300 && char <= 0x1d35f) || (char >= 0x4dc0 && char <= 0x4dff)  || (char >= 0xa000 && char <= 0xa48f)   
+			|| (char >= 0xa490 && char <= 0xa4cf) || (char >= 0x2800 && char <= 0x28ff) || (char >= 0x3200 && char <= 0x32ff)   
+			|| (char >= 0x3300 && char <= 0x33ff) || (char >= 0x2700 && char <= 0x27bf) || (char >= 0x2600 && char <= 0x26ff)  
+			|| (char >= 0xfe10 && char <= 0xfe1f) || (char >= 0xfe30 && char <= 0xfe4f)){  
+		    if(before){  
+				++count;  
+				before=false;  
+			}  
+            ++count;  
+         }else{  
+		   //说明前面有字母  
+           before=true;  
+		 }  
+		     
+	}	    
+    //最后判定一下  
+    if(before)  
+		++count;  
+    return count;  
+}  
+</script>  
+	
