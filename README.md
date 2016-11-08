@@ -187,13 +187,13 @@
 		return total;  
 	}  
   
-function wordCount(word){
-	if(!word || 0 === word.length) return 0;
-	word = word.replace(/^\s+|\s+$/gm,'');
-	if(!word || 0 === word.length) return 0;
-	var char, i, len = word.length, count = 0;
-	var before=false;
-    for (i = 0; i < len; ++i){
+	function wordCount(word){
+		if(!word || 0 === word.length) return 0;
+		word = word.replace(/^\s+|\s+$/gm,'');
+		if(!word || 0 === word.length) return 0;
+		var char, i, len = word.length, count = 0;
+		var before=false;
+	    for (i = 0; i < len; ++i){
 		//此处算法为：1.如果是英文字母，则需要看一下字符，直到遇到一个其他语言字符，此时前面字数加1，如果到单词尾也加一
 		//中、日、韩分别区间，三者标点符号为相应区间，都算一个字
 		//英语、法语、俄语、葡萄牙语处理一样，所以这里就不判断了
