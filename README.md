@@ -226,7 +226,7 @@
 				}
 		    ++count;
 			//其他中日韩补充，如符号、音标
-			} else if ((char >= 0x0800 && char <= 0x4e00) || (char >= 0xff00 && char <= 0xffef) || 
+			} else if ((char >= 0xff00 && char <= 0xffef) || 
 					(char >= 0x3000 && char <= 0x303f) || (char >= 0x31c0 && char <= 0x31ef)  ||
 					(char >= 0x2ff0 && char <= 0x2fff) || (char >= 0x31a0 && char <= 0x31bf) || 
 					(char >= 0x1d300 && char <= 0x1d35f) || (char >= 0x4dc0 && char <= 0x4dff) || 
@@ -256,4 +256,7 @@
 
 
 </script>
-	
+
+
+#### java版	
+     使用WordCntUtil类的计算方法
