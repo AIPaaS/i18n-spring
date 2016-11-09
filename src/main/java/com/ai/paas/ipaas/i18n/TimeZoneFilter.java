@@ -1,7 +1,6 @@
 package com.ai.paas.ipaas.i18n;
 
 import java.io.IOException;
-import java.util.TimeZone;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -12,7 +11,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
  * @author DOUXF 用于探测用户的时区，全部拦截，在首页时尾部增加一段js代码，然后发送到固定的URL, 需要下面的js来实现
@@ -45,8 +43,7 @@ public class TimeZoneFilter implements Filter {
 		if (null != offset && !"".equals(offset)) {
 			int timeOffset = Integer.parseInt(offset);
 			timeOffset = (0 - timeOffset) / 60;
-			LocaleContextHolder.setTimeZone(TimeZone.getTimeZone("GMT+"
-					+ timeOffset));
+			ZoneContextHolder.setZone("GMT+" + timeOffset);
 			// 放到session里面
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			httpRequest.getSession(true).setAttribute(USER_TIME_ZONE,
