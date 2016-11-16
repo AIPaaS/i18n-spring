@@ -11,7 +11,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-
 /**
  * @author DOUXF 用于探测用户的时区，全部拦截，在首页时尾部增加一段js代码，然后发送到固定的URL, 需要下面的js来实现
  *         Date.prototype.stdTimezoneOffset = function() { var jan = new
@@ -43,11 +42,17 @@ public class TimeZoneFilter implements Filter {
 		if (null != offset && !"".equals(offset)) {
 			int timeOffset = Integer.parseInt(offset);
 			timeOffset = (0 - timeOffset) / 60;
-			ZoneContextHolder.setZone("GMT+" + timeOffset);
+			if (timeOffset >= 0)
+				ZoneContextHolder.setZone("GMT+" + timeOffset);
+			else
+				ZoneContextHolder.setZone("GMT" + timeOffset);
 			// 放到session里面
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
-			httpRequest.getSession(true).setAttribute(USER_TIME_ZONE,
-					"GMT+" + timeOffset);
+			httpRequest.getSession(true)
+					.setAttribute(
+							USER_TIME_ZONE,
+							(timeOffset >= 0 ? "GMT+" + timeOffset : "GMT"
+									+ timeOffset));
 		} else {
 			// 看来得放到session里面
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
