@@ -87,10 +87,10 @@
         此时要对SimpleDateFormat对象进行GMT时区设置，这样保证得到时间为GMT标准时间  
 	如：  
 		Dubbo端  
-		sdf.setTimeZone(LocaleContextHolder.getTimeZone());  
+		sdf.setTimeZone(TimeZone.getTimeZone(ZoneContextHolder.getTimeZone()));  
 		sdf.parse(sd)  
 		Web端：
-			sdf.setTimeZone(ZoneContextHolder.getZone());  
+			sdf.setTimeZone(TimeZone.getTimeZone(ZoneContextHolder.getZone()));  
 			sdf.parse(sd)  
 ##### 在页面中展示用jstl展示时间  
 		在所有页面需要设置：
