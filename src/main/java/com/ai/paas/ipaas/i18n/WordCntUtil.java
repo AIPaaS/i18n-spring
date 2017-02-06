@@ -110,6 +110,7 @@ public class WordCntUtil {
 		text = text.replaceAll("\\s", " ");
 		// java区分非换行空格，需要特殊处理
 		text = text.replaceAll("\\p{javaSpaceChar}", " ");
+		text = text.replaceAll("\u00A0", " ");
 		// 替换回车和换行为空格
 		text = text.replaceAll("\\r\\n|\\r|\\n", " ");
 		return text;
