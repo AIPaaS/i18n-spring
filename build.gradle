@@ -98,7 +98,7 @@ sourceSets {
 
 ext {
 	moduleName = "ipaas-i18n-spring";
-	moduleVersion = version != "unspecified"?version:'0.3.3'
+	moduleVersion = version != "unspecified"?version:'0.3.4'
 	moduleMode = project.hasProperty('mode') ? project.getProperty('mode') : 'R'
 	if(moduleMode == 'S'){
 		moduleVersion = moduleVersion + "-SNAPSHOT";
@@ -117,7 +117,7 @@ dependencies{
 	compile "org.apache.logging.log4j:log4j-slf4j-impl:2.2"
 	compile "org.apache.logging.log4j:log4j-1.2-api:2.2"
 	
-	compile 'com.ai:ipaas-common:0.3.1'
+	compile 'com.ai:ipaas-common:0.3.3'
 
 	compile "org.springframework:spring-web:4.1.7.RELEASE"
     compile "org.springframework:spring-webmvc:4.1.7.RELEASE"
